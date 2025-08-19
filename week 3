@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct stack {
+    int data;
+    struct stack *next;
+};
+
+struct stack *top = NULL;
+
+struct stack *push(struct stack *, int);
+struct stack *pop(struct stack *);
+struct stack *display(struct stack *);
+int peek(struct stack *);
+
+int main() {
+    int val, option;
+
+    do {
+        printf("\n*** MAIN MENU ***");
+        printf("\n1. PUSH");
+        printf("\n2. POP");
+        printf("\n3. PEEK");
+        printf("\n4. DISPLAY");
+        printf("\n5. EXIT");
+        printf("\nENTER YOUR CHOICE: ");
+        scanf("%d", &option);
+
+        switch(option) {
+            case 1:
+                printf("Enter the value to push: ");
+                scanf("%d", &val);
+                top = push(top, val);
+                break;
+            case 2:
+                top = pop(top);
+                break;
+            case 3:
+                val = peek(top);
+                if (val != -1)
+                    printf("Top element is: %d\n", val);
+                break;
+            case 4:
+                top = display(top);
+                break;
+            case 5:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (option != 5);
+
+    return 0;
+}
+
+struct stack *push(struct stack *top, int val) {
+    struct stack *new_node = (struct stack *)malloc(sizeof(struct stack));
+    if (new_node == NULL) {
+        printf("Memory allocation failed.\n");
+        return top;
+    }
+    new_node->data = val;
+    new_node->next = top;
+    top = new_node;
+    printf("Pushed %d onto the stack.\n", val);
+    return top;
+}
+
+struct stack *pop(struct stack *top) {
+    if (top == NULL) {
+        printf("UNDERFLOW: Stack is empty.\n");
+        return top;
+    }
+    struct stack *temp = top;
+    printf("Popped value: %d\n", temp->data);
+    top = top->next;
+    free(temp);
+    return top;
+}
+
+int peek(struct stack *top) {
+    if (top == NULL) {
+        printf("Stack is empty.\n");
+        return -1;
+    }
+    return top->data;
+}
+
+struct stack *display(struct stack *top) {
+    struct stack *ptr = top;
+    if (ptr == NULL) {
+        printf("Stack is empty.\n");
+        return top;
+    }
+
+    printf("Stack elements (top to bottom): ");
+    while (ptr != NULL) {
+        printf("%d ", ptr->data);
+        ptr = ptr->next;
+    }
+    printf("\n");
+    return top;
+}
