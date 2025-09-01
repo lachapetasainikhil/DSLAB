@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#define max 100
+
+char stack[max];
+int top = -1;
+
+// Push
+void push(char c) {
+    if (top < max - 1) {
+        stack[++top] = c;
+    }
+}
+
+// Pop
+char pop() {
+    if (top >= 0) {
+        return stack[top--];
+    }
+    return -1;
+}
+
+// Peek
+char peek() {
+    if (top >= 0) {
+        return stack[top];
+    }
+    return -1;
+}
+
+// Precedence of operators
+int precedence(char op) {
+    switch (op) {
+        case '*':
+        case '/':
+        case '%': return 2;
+        case '+':
+        case '-': return 1;
+        default: return 0;
+    }
+}
+
+// Check if character is operator
+int isoperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
+}
+
+// Infix to postfix conversion
+void infixtopostfix(char infix[], char postfix[]) {
+    int i, k = 0;
+    char symbol;
+    for (i = 0; i < strlen(infix); i++) {
+        symbol = infix[i];
+
+        // Operand? Add to postfix
+        if (isalnum(symbol)) {
+            postfix[k++] = symbol;
+        }
+        // Left parenthesis
+        else if (symbol == '(') {
+            push(symbol);
+        }
+        // Right parenthesis
+        else if (symbol == ')') {
+            while (top != -1 && peek() != '(') {
+                postfix[k++] = pop();
+            }
+            pop(); // Remove '('
+        }
+        // Operator
+        else if (isoperator(symbol)) {
+            while (top != -1 && precedence(peek()) >= precedence(symbol)) {
+                postfix[k++] = pop();
+            }
+            push(symbol);
+        }
+    }
+
+    while (top != -1) {
+        postfix[k++] = pop();
+    }
+    postfix[k] = '\0'; 
+// Null-terminate string
+}
+
+int main() {
+    char infix[max], postfix[max];
+    printf("Enter an infix expression: ");
+    scanf("%s", infix);
+    infixtopostfix(infix, postfix);
+    printf("Postfix expression: %s\n", postfix);
+    return 0;
+}
