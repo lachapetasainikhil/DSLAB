@@ -12,7 +12,7 @@ struct Node
 // Function to create a new node
 struct Node* createNode(int data) 
 {
-    (sizeof(struct Node))=(struct Node*)malloc(sizeof(struct Node));
+struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
     newNode->data = data;
     newNode->left = NULL;
     newNode->right = NULL;
