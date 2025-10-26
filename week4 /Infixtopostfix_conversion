@@ -1,0 +1,75 @@
+#include <stdio.h>
+#include <ctype.h>   // for isalnum()
+#define MAX 100
+
+char stack[MAX];
+int top = -1;
+
+// push function
+void push(char c) {
+    stack[++top] = c;
+}
+
+// pop function
+char pop() {
+    return stack[top--];
+}
+
+// precedence function
+int prec(char c) {
+    if (c == '*' || c == '/' || c == '%')
+        return 2;
+    else if (c == '+' || c == '-')
+        return 1;
+    else
+        return 0;
+}
+
+// infix to postfix function
+void infixToPostfix(char infix[], char postfix[]) {
+    int i, k = 0;
+    char ch;
+
+    for (i = 0; infix[i] != '\0'; i++) {
+        ch = infix[i];
+
+        // if operand, add to postfix
+        if (isalnum(ch)) {
+            postfix[k++] = ch;
+        }
+        // if '(', push it
+        else if (ch == '(') {
+            push(ch);
+        }
+        // if ')', pop until '('
+        else if (ch == ')') {
+            while (top != -1 && stack[top] != '(')
+                postfix[k++] = pop();
+            pop(); // remove '('
+        }
+        // if operator
+        else {
+            while (top != -1 && prec(stack[top]) >= prec(ch))
+                postfix[k++] = pop();
+            push(ch);
+        }
+    }
+
+    // pop remaining elements
+    while (top != -1)
+        postfix[k++] = pop();
+
+    postfix[k] = '\0';
+}
+
+int main() {
+    char infix[MAX], postfix[MAX];
+
+    printf("Enter infix expression: ");
+    scanf("%s", infix);
+
+    infixToPostfix(infix, postfix);
+
+    printf("Postfix expression: %s\n", postfix);
+    return 0;
+}
